@@ -46,6 +46,9 @@ Funcs:
 ## Tested Client Compatibility
 2025-06-04
 
+## Disclaimer
+Use at your own risk.
+
 ## Credits
 - [rAthena](https://github.com/rathena/rathena) — for the packet structures and base type definitions
 - [skylove](https://github.com/hiphop9) - for the client and for the updated warp
