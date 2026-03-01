@@ -1,0 +1,21 @@
+# Build output
+build/
+obj/
+
+# Visual Studio
+.vs/
+*.vcxproj.user
+*.suo
+*.sdf
+*.opensdf
+*.db
+*.opendb
+ipch/
+
+# Binaries
+*.dll
+*.lib
+*.exp
+*.pdb
+*.ilk
+*.exe
