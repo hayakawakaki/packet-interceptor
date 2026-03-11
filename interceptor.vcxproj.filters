@@ -19,7 +19,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="packets.hpp">
+    <ClInclude Include="packet_def.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="handler.hpp">

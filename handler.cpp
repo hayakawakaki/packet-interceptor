@@ -1,10 +1,10 @@
 #include "handler.hpp"
-#include "packets.hpp"
+#include "packet_def.hpp"
 
 #include <sodium.h>
 #include <cstring>
 
-int handle_login( SOCKET s, const char *buf, int len, int flags, SEND_FN real_send ){
+int handle_login( SOCKET s, const char *buf, int len, int flags, SEND_FN real_send ) {
 	if ( len != sizeof( PACKET_CA_LOGIN ) )
 		return -1;
 

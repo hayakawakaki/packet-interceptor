@@ -2,29 +2,21 @@
 #include <windows.h>
 #include <sodium.h>
 
-#include "packets.hpp"
+#include "packet_def.hpp"
+#include "packet.hpp"
 #include "handler.hpp"
 
 static SEND_FN original_send = nullptr;
 
-static int WINAPI send_intercept( SOCKET s, const char *buf, int len, int flags ){
-	if ( len >= 2 ) {
-		int16 header = *reinterpret_cast<const int16*>( buf );
-	
-		switch ( header ) {
-			case HEADER_CA_LOGIN: {
-				int result = handle_login( s, buf, len, flags, original_send );
-				if ( result != -1 )
-					return result;
-				break;
-			}
-		}
-	}
+static int WINAPI send_intercept( SOCKET s, const char *buf, int len, int flags ) {
+	int result = packet_handler_dispatch( s, buf, len, flags, original_send );
+	if ( result != -1 )
+		return result;
 
 	return original_send( s, buf, len, flags );
 }
 
-static bool hook_send(){
+static bool hook_send() {
 	HMODULE ws2 = GetModuleHandleA( "ws2_32.dll" );
 	if ( ws2 == nullptr )
 		return false;
@@ -57,19 +49,25 @@ static bool hook_send(){
 	return true;
 }
 
+static void register_handlers() {
+	packet_handler_register( HEADER_CA_LOGIN, handle_login );
+}
+
 // Initialize required libraries and install hooks
-static bool init(){
+static bool init() {
 	if ( sodium_init() == -1 )
 		return false;
+
+	register_handlers();
 
 	return hook_send();
 }
 
 // Dummy — CFF Explorer needs a real function name to add this DLL to the PE import table
-extern "C" __declspec(dllexport) void interceptor_init( void ){}
+extern "C" __declspec(dllexport) void interceptor_init( void ) {}
 
 // Entrypoint
-BOOL WINAPI DllMain( HINSTANCE dll_instance, DWORD fdw_reason, LPVOID ){
+BOOL WINAPI DllMain( HINSTANCE dll_instance, DWORD fdw_reason, LPVOID ) {
 	if ( fdw_reason == DLL_PROCESS_ATTACH ) {
 		DisableThreadLibraryCalls( dll_instance );
 		return init();
